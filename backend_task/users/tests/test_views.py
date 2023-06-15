@@ -7,6 +7,44 @@ from rest_framework import status
 from rest_framework.test import APIClient
 
 
+class SignUpTestCase(TestCase):
+    """Tests for the sign up view."""
+
+    def setUp(self) -> None:
+        """Set up some test data."""
+        self.client = APIClient()
+        self.user = User.objects.create(
+            username="existing@example.com",
+            email="existing@example.com",
+        )
+
+    def test_successful_sign_up(self) -> None:
+        """Make sure it's possible to sign up new users."""
+        user_count = User.objects.count()
+        response = self.client.post(
+            reverse("users:sign-up"),
+            {
+                "email": "new@example.com",
+                "password": "1234horse",
+            },
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(User.objects.count(), user_count + 1)
+
+    def test_signing_up_existing_user(self) -> None:
+        """Make sure it's not possible to sign up existing users."""
+        user_count = User.objects.count()
+        response = self.client.post(
+            reverse("users:sign-up"),
+            {
+                "email": self.user.email,
+                "password": "1234horse",
+            },
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(User.objects.count(), user_count)
+
+
 class LogInTestCase(TestCase):
     """Tests for the log in view."""
 
