@@ -2,6 +2,7 @@
 
 from django.contrib.auth.models import User
 from django.test import TestCase
+from rest_framework.exceptions import ValidationError
 
 from users import serializers
 
@@ -55,3 +56,17 @@ class LogInSerializerTestCase(TestCase):
         )
         serializer.is_valid(raise_exception=True)
         self.assertEqual(set(serializer.data.keys()), {"email", "password"})
+
+
+class PasswordResetSerializerTestCase(TestCase):
+    """Tests for the password reset serializer."""
+
+    def test_email_required(self) -> None:
+        """Make sure the e-mail field is required."""
+        serializer = serializers.PasswordResetSerializer(
+            data={
+                "animal": "horse",
+            }
+        )
+        with self.assertRaises(ValidationError):
+            serializer.is_valid(raise_exception=True)

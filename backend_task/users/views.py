@@ -3,6 +3,7 @@
 import logging
 
 from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.models import User
 from django.utils.translation import gettext
 from rest_framework import exceptions
 from rest_framework.decorators import api_view
@@ -60,3 +61,25 @@ def log_out(request) -> Response:
     logout(request)
 
     return Response(gettext("You are now logged out."))
+
+
+@api_view(["POST"])
+def reset_password(request) -> Response:
+    """Ask for a password reset e-mail."""
+    serializer = serializers.PasswordResetSerializer(data=request.data)
+    serializer.is_valid(raise_exception=True)
+    user = User.objects.get(
+        username__iexact=serializer.validated_data["email"].lower(),
+        is_active=True,
+    )
+    if user is None:
+        logger.info("User for password reset not found.")
+    else:
+        logger.info("Send password reset e-mail.")
+        # TODO: Send the e-mail.
+
+    return Response(
+        gettext(
+            "We have send you further instructions, if we know your e-mail address."
+        )
+    )

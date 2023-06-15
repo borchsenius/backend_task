@@ -47,3 +47,14 @@ class LogInSerializer(serializers.Serializer):
         """Meta class for the serializer."""
 
         fields = ["email", "password"]
+
+
+class PasswordResetSerializer(serializers.Serializer):
+    """A serializer for password resets."""
+
+    email = serializers.EmailField()
+
+    class Meta:
+        """Meta class for the serializer."""
+
+        fields = ["email"]

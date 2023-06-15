@@ -129,3 +129,44 @@ class LogOutTestCase(TestCase):
         response = self.client.post(reverse("users:log-out"))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertNotIn("_auth_user_id", self.client.session)
+
+
+class PasswordResetTestCase(TestCase):
+    """Tests for the password reset."""
+
+    def setUp(self) -> None:
+        """Set up some test data."""
+        self.client = APIClient()
+        self.user = User.objects.create(
+            username="existing@example.com",
+            email="existing@example.com",
+        )
+
+    def test_reset_for_known_and_unknown(self):
+        """Make sure password reset does not leak information about users."""
+        # First we make a reset request for our known user and expect a
+        # good response.
+        response_for_known = self.client.post(
+            reverse("users:reset-password"),
+            data={
+                "email": self.user.email,
+            },
+        )
+        self.assertEqual(response_for_known.status_code, status.HTTP_200_OK)
+
+        # Now make a request for an unknown user. We expect the response to
+        # be identical to the one for the known user.
+        response_for_unknown = self.client.post(
+            reverse("users:reset-password"),
+            data={
+                "email": "unknown@example.com",
+            },
+        )
+        self.assertEqual(
+            response_for_known.status_code,
+            response_for_unknown.status_code,
+        )
+        self.assertEqual(
+            response_for_known.json(),
+            response_for_unknown.json(),
+        )
