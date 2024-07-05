@@ -20,7 +20,7 @@ class SignUpSerializer(serializers.Serializer):
 
     def validate_email(self, value: str) -> None:
         """Make sure we don't already have this user in the system."""
-        if User.objects.filter(username=value).exists():
+        if User.objects.filter(username=value.lower()).exists():
             raise UserAlreadyExistsError(gettext("This user already exists."))
 
         return value
@@ -28,8 +28,8 @@ class SignUpSerializer(serializers.Serializer):
     def create(self, validated_data: dict) -> User:
         """Create the user."""
         user = User.objects.create(
-            username=validated_data["email"],
-            email=validated_data["email"],
+            username=validated_data["email"].lower(),
+            email=validated_data["email"].lower(),
         )
         user.set_password(validated_data["password"])
         user.save()
