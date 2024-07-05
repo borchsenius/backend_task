@@ -66,7 +66,7 @@ Browsed the admin-interface http://localhost:8000/admin/ and found that there we
 * Mr.Inconsistent@example.com
 * mr.Inconsistent@example.com
 
-That's the *first issue*, and why mr. inconsistent can't login. Multiple user records
+That's the *first issue*, and why mr. inconsistent can't login. Multiple user records.
 
 ## Testing
 
@@ -83,4 +83,4 @@ In order to prevent this from happening again a new test `test_sign_up_existing_
 
 The signup serializer had a bug, and the *solution* is quite simple. The user input needs sanitizing. In this case, lowercasing the e-mail and username in both the `create` and `validate` methods fixes the problem with case sensitivity. In case there might be external scripts or integrations creating users, both methods have been changed. The form could be hardened further.
 
-The 
+There is still one test case failing that needs fixing...
