@@ -60,7 +60,7 @@ class SignUpSerializerTestCase(TestCase):
         """Make sure it's not possible to sign up an existing user."""
         serializer = serializers.SignUpSerializer(
             data={
-                "email": self.existing_user.email.capitalize,
+                "email": self.existing_user.email.upper(),
                 "password": "donttellany1",
             }
         )
