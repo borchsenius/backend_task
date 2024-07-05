@@ -31,6 +31,20 @@ class SignUpSerializerTestCase(TestCase):
         self.assertEqual(user.email, email)
         self.assertEqual(user.username, email)
 
+    def test_sign_up_new_user(self) -> None:
+        """Make sure creating a new user works as expected."""
+        email = "new@example.com"
+        serializer = serializers.SignUpSerializer(
+            data={
+                "email": email,
+                "password": "donttellany1",
+            }
+        )
+        serializer.is_valid(raise_exception=True)
+        user = serializer.save()
+        self.assertEqual(user.email, email)
+        self.assertEqual(user.username, email)
+
     def test_sign_up_existing_user(self) -> None:
         """Make sure it's not possible to sign up an existing user."""
         serializer = serializers.SignUpSerializer(
@@ -41,6 +55,18 @@ class SignUpSerializerTestCase(TestCase):
         )
         with self.assertRaises(serializers.UserAlreadyExistsError):
             serializer.is_valid(raise_exception=True)
+
+    def test_sign_up_existing_user_capitalletters(self) -> None:
+        """Make sure it's not possible to sign up an existing user."""
+        serializer = serializers.SignUpSerializer(
+            data={
+                "email": self.existing_user.email.capitalize,
+                "password": "donttellany1",
+            }
+        )
+        with self.assertRaises(serializers.UserAlreadyExistsError):
+            serializer.is_valid(raise_exception=True)
+
 
 
 class LogInSerializerTestCase(TestCase):
